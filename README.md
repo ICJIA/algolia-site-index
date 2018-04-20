@@ -1,14 +1,16 @@
 # Algolia Site Indexer
 
-Creates an Algolia index of pages for a website.
+Creates an Algolia index for a website based on a `sitemap.xml` file.
 
-The Algolia `objectID` is a hash of the page URL.
+Note: Algolia's required `objectID` is an MD5 hash of each page's URL.
 
-This app saves the Algolia response object (which contains the updated ObjectID)
+After fetching the metadata for each page, the app then checks for page deletions since the last update.
+
+If deletion(s) are detected, the app removes the deleted objects from the Algolia index.
 
 ## Requirements
 
-`sitemap.xml` in live site.
+A `sitemap.xml` file.
 
 ## Configuration
 
