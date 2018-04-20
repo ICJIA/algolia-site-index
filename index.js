@@ -17,12 +17,13 @@ let logger = require("./utils/logger").createLogger();
 // let res = fs.readFileSync(xmlPath);
 
 // Get current json of Algolia objects
-let config, sitemap, index;
+let config, sitemap, appIndex, urlBase;
 try {
   config = jsonfile.readFileSync("./config.json");
   logger.info("config.json fetched");
   appIndex = config["ifvcc"].index;
   sitemap = config["ifvcc"].sitemap;
+  urlBase = config["ifvcc"].urlBase;
 } catch (e) {
   logger.error("config.json does not exist");
   process.exit(1);
@@ -68,7 +69,8 @@ function get(url) {
           "description undefined",
         keywords:
           $("meta[name='keywords' i]").attr("content") || "keywords undefined",
-        url: url,
+        url: url.replace(/.*\/\/[^\/]*/, ""),
+        fullUrl: url,
         body:
           $("#page-content")
             .text()
@@ -112,7 +114,7 @@ function setSearchObjects(objects) {
       console.log("Delete: ", objectsToDelete);
       index.deleteObjects(objectsToDelete, function(err, res) {
         if (err) throw err;
-        logger.info(`Successfully deleted: ${res}`);
+        logger.info(`Successfully deleted: ${objectsToDelete}`);
       });
     } else {
       logger.info("No deletions detected");

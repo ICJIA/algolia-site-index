@@ -1,10 +1,12 @@
 {
   "ifvcc": {
     "index": "ifvcc",
-    "sitemap": "https://ifvcc.netlify.com/sitemap.xml"
+    "sitemap": "https://ifvcc.netlify.com/sitemap.xml",
+    "urlBase": "https://ifvcc.netlify.com"
   },
   "ilheals": {
     "index": "ilheals",
-    "sitemap": "https://illinois-heals.netlify.com/sitemap.xml"
+    "sitemap": "https://illinois-heals.netlify.com/sitemap.xml",
+    "urlBase": "https://illinois-heals.netlify.com"
   }
 }
