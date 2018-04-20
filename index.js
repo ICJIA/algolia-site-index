@@ -21,8 +21,8 @@ let config, sitemap, index;
 try {
   config = jsonfile.readFileSync("./config.json");
   logger.info("config.json fetched");
-  appIndex = config["ifvcc"].index || "default";
-  sitemap = config["ifvcc"].sitemap || "default";
+  appIndex = config["ifvcc"].index;
+  sitemap = config["ifvcc"].sitemap;
 } catch (e) {
   logger.error("config.json does not exist");
   process.exit(1);
@@ -118,6 +118,6 @@ function setSearchObjects(objects) {
       logger.info("No deletions detected");
     }
 
-    logger.info("Algolia search index updated.");
+    logger.info("Indexing complete.");
   });
 }

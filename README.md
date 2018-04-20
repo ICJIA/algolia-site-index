@@ -1,7 +1,26 @@
 # Algolia Site Indexer
 
-Index a Nuxt.js website with Algolia.
+Creates an Algolia index of pages for a website.
 
-Index is based on `sitemap.xml`
+The Algolia `objectID` is a hash of the page URL.
 
-## More here
+This app saves the Algolia response object (which contains the updated ObjectID)
+
+## Requirements
+
+`sitemap.xml` in live site.
+
+## Configuration
+
+* Rename `.env-sample` to `.env` and embed your Algolia keys.
+* Edit `config.json` to reflect the sites you want to index.
+
+## Run
+
+```bash
+$ node .
+```
+
+## TODO:
+
+* CLI mode.
