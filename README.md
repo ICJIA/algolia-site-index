@@ -25,4 +25,4 @@ $ node .
 
 ## TODO:
 
-* CLI mode.
+* Improve CLI for multiple sites

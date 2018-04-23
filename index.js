@@ -1,15 +1,16 @@
-require("dotenv").config();
+let siteName = "ifvcc";
 
+require("dotenv").config();
 let _ = require("lodash");
 let jsonfile = require("jsonfile");
 let wtj = require("website-to-json");
 let trim = require("trim");
 let fs = require("fs");
 let parser = require("xml2json");
-let algoliaIndex = [];
 let algoliasearch = require("algoliasearch");
 let crypto = require("crypto");
 let logger = require("./utils/logger").createLogger();
+let previouslyIndexed;
 
 // For local testing:
 // let path = require("path");
@@ -17,17 +18,21 @@ let logger = require("./utils/logger").createLogger();
 // let res = fs.readFileSync(xmlPath);
 
 // Get current json of Algolia objects
-let config, sitemap, appIndex, urlBase;
+let config, sitemap, appIndex, urlBase, bodyContentId, titleReplacement;
 try {
   config = jsonfile.readFileSync("./config.json");
-  logger.info("config.json fetched");
-  appIndex = config["ifvcc"].index;
-  sitemap = config["ifvcc"].sitemap;
-  urlBase = config["ifvcc"].urlBase;
+  logger.info(`config.json fetched`);
+  appIndex = config[siteName].index;
+  sitemap = config[siteName].sitemap;
+  urlBase = config[siteName].urlBase;
+  titleReplacement = config[siteName].titleReplacement || "";
+  bodyContentId = config[siteName].bodyContentId || "#content";
 } catch (e) {
-  logger.error("config.json does not exist");
+  logger.error("Config.json error.");
   process.exit(1);
 }
+
+console.log("bodyContentId: ", bodyContentId);
 
 // Get Sitemap from URL
 let request = require("sync-request");
@@ -39,11 +44,11 @@ let urls = JSON.parse(myJson)["urlset"].url;
 // Get current json of Algolia objects
 let algoliaOldContent;
 try {
-  algoliaOldContent = jsonfile.readFileSync(`./${appIndex}.json`);
+  algoliaOldContent = jsonfile.readFileSync(`./sites/${appIndex}.json`);
   logger.info(`${appIndex}.json fetched`);
+  previouslyIndexed = true;
 } catch (e) {
   logger.error(`${appIndex}.json does not exist`);
-  process.exit(1);
 }
 
 let arrayOfUrls = urls.map(url => {
@@ -63,7 +68,10 @@ function get(url) {
     fields: ["data"],
     parse: function($) {
       return {
-        title: $("title").text() || "title undefined",
+        title:
+          $("title")
+            .text()
+            .replace(titleReplacement, "") || "title undefined",
         description:
           $("meta[name='description' i]").attr("content") ||
           "description undefined",
@@ -72,7 +80,7 @@ function get(url) {
         url: url.replace(/.*\/\/[^\/]*/, ""),
         fullUrl: url,
         body:
-          $("#page-content")
+          $(bodyContentId)
             .text()
             .substring(0, 2500) || "page content undefined",
         objectID: objectID
@@ -103,21 +111,23 @@ function setSearchObjects(objects) {
   let index = client.initIndex(`${appIndex}`);
   index.addObjects(objects, function(err, algoliaNewContent) {
     // save current pages
-    jsonfile.writeFileSync(`${appIndex}.json`, algoliaNewContent);
+    jsonfile.writeFileSync(`./sites/${appIndex}.json`, algoliaNewContent);
     logger.info(`${appIndex}.json written`);
-    // detect deletions
-    let oldArr = algoliaOldContent["objectIDs"];
-    let newArr = algoliaNewContent["objectIDs"];
-    let objectsToDelete = _.differenceWith(oldArr, newArr, _.isEqual);
+    // detect deletions only if previously indexed
+    if (previouslyIndexed) {
+      let oldArr = algoliaOldContent["objectIDs"];
+      let newArr = algoliaNewContent["objectIDs"];
+      let objectsToDelete = _.differenceWith(oldArr, newArr, _.isEqual);
 
-    if (objectsToDelete.length) {
-      console.log("Delete: ", objectsToDelete);
-      index.deleteObjects(objectsToDelete, function(err, res) {
-        if (err) throw err;
-        logger.info(`Successfully deleted: ${objectsToDelete}`);
-      });
-    } else {
-      logger.info("No deletions detected");
+      if (objectsToDelete.length) {
+        console.log("Delete: ", objectsToDelete);
+        index.deleteObjects(objectsToDelete, function(err, res) {
+          if (err) throw err;
+          logger.info(`Successfully deleted: ${objectsToDelete}`);
+        });
+      } else {
+        logger.info("No deletions detected");
+      }
     }
 
     logger.info("Indexing complete.");

@@ -2,11 +2,15 @@
   "ifvcc": {
     "index": "ifvcc",
     "sitemap": "https://ifvcc.netlify.com/sitemap.xml",
-    "urlBase": "https://ifvcc.netlify.com"
+    "urlBase": "https://ifvcc.netlify.com",
+    "bodyContentId": "#page-content",
+    "titleReplacement": "IFVCC | "
   },
   "ilheals": {
     "index": "ilheals",
     "sitemap": "https://illinois-heals.netlify.com/sitemap.xml",
-    "urlBase": "https://illinois-heals.netlify.com"
+    "urlBase": "https://illinois-heals.netlify.com",
+    "bodyContentId": "#page-content",
+    "titleReplacement": "Illinois HEALS | "
   }
 }
