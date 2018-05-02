@@ -1,4 +1,4 @@
-let siteName = "ifvcc";
+let siteName = "ilheals";
 
 require("dotenv").config();
 let _ = require("lodash");
@@ -6,6 +6,7 @@ let jsonfile = require("jsonfile");
 let wtj = require("website-to-json");
 let trim = require("trim");
 let fs = require("fs");
+let algoliaIndex = [];
 let parser = require("xml2json");
 let algoliasearch = require("algoliasearch");
 let crypto = require("crypto");
@@ -32,7 +33,7 @@ try {
   process.exit(1);
 }
 
-console.log("bodyContentId: ", bodyContentId);
+// console.log("bodyContentId: ", bodyContentId);
 
 // Get Sitemap from URL
 let request = require("sync-request");
@@ -57,6 +58,12 @@ let arrayOfUrls = urls.map(url => {
 
 let num = arrayOfUrls.length;
 
+function stripHtml(html) {
+  // strip HTML -- replace with space for Algolia
+  let searchContent = html.replace(/<(?:.|\n)*?>/gm, " ");
+  return searchContent;
+}
+
 function get(url) {
   // create Algolia objectID based on hash of page url
   let objectID = crypto
@@ -79,10 +86,10 @@ function get(url) {
           $("meta[name='keywords' i]").attr("content") || "keywords undefined",
         url: url.replace(/.*\/\/[^\/]*/, ""),
         fullUrl: url,
-        body:
-          $(bodyContentId)
-            .text()
-            .substring(0, 2500) || "page content undefined",
+        body: stripHtml($(bodyContentId).html()),
+        // $(bodyContentId)
+        //   .text()
+        //   .substring(0, 2500) || "page content undefined",
         objectID: objectID
       };
     }
