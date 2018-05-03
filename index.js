@@ -70,6 +70,7 @@ function get(url) {
     .createHash("md5")
     .update(url)
     .digest("hex");
+  console.log("Url: ", url);
   return wtj.extractUrl(url, {
     // create the page object for Algolia
     fields: ["data"],
