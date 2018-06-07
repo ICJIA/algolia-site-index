@@ -1,4 +1,4 @@
-let siteName = "ilheals";
+let siteName = "ifvcc";
 
 require("dotenv").config();
 let _ = require("lodash");
@@ -117,15 +117,20 @@ function setSearchObjects(objects) {
   );
 
   let index = client.initIndex(`${appIndex}`);
-  index.addObjects(objects, function(err, algoliaNewContent) {
-    // save current pages
-    jsonfile.writeFileSync(`./sites/${appIndex}.json`, algoliaNewContent);
-    logger.info(`${appIndex}.json written`);
-    // detect deletions only if previously indexed
+  index.addObjects(objects, function(err, content) {
+    //detect deletions only if previously indexed
     if (previouslyIndexed) {
       let oldArr = algoliaOldContent["objectIDs"];
-      let newArr = algoliaNewContent["objectIDs"];
+
+      let newArr = objects.map(idx => {
+        return idx.objectID;
+      });
+
       let objectsToDelete = _.differenceWith(oldArr, newArr, _.isEqual);
+
+      //save current pages
+      jsonfile.writeFileSync(`./sites/${appIndex}.json`, newArr);
+      logger.info(`${appIndex}.json written`);
 
       if (objectsToDelete.length) {
         console.log("Delete: ", objectsToDelete);

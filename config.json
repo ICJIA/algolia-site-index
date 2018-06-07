@@ -8,8 +8,8 @@
   },
   "ilheals": {
     "index": "ilheals",
-    "sitemap": "https://illinois-heals.netlify.com/sitemap.xml",
-    "urlBase": "https://illinois-heals.netlify.com",
+    "sitemap": "https://www.ilheals.com/sitemap.xml",
+    "urlBase": "https://www.ilheals.com/",
     "bodyContentId": "#page-content",
     "titleReplacement": "Illinois HEALS | "
   }
