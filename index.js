@@ -1,4 +1,4 @@
-let siteName = "ifvcc";
+let siteName = "ilheals";
 
 require("dotenv").config();
 let _ = require("lodash");
@@ -59,7 +59,7 @@ let arrayOfUrls = urls.map(url => {
 let num = arrayOfUrls.length;
 
 function stripHtml(html) {
-  // strip HTML -- replace with space for Algolia
+  // strip HTML -- replace with single space for Algolia
   let searchContent = html.replace(/<(?:.|\n)*?>/gm, " ");
   return searchContent;
 }
@@ -87,10 +87,9 @@ function get(url) {
           $("meta[name='keywords' i]").attr("content") || "keywords undefined",
         url: url.replace(/.*\/\/[^\/]*/, ""),
         fullUrl: url,
-        body: stripHtml($(bodyContentId).html()),
-        // $(bodyContentId)
-        //   .text()
-        //   .substring(0, 2500) || "page content undefined",
+        body:
+          stripHtml($(bodyContentId).html()).substring(0, 9500) ||
+          "page content undefined",
         objectID: objectID
       };
     }
@@ -118,20 +117,17 @@ function setSearchObjects(objects) {
 
   let index = client.initIndex(`${appIndex}`);
   index.addObjects(objects, function(err, content) {
+    console.log("Error: ", err);
     //detect deletions only if previously indexed
     if (previouslyIndexed) {
       let oldArr = algoliaOldContent["objectIDs"];
-
       let newArr = objects.map(idx => {
         return idx.objectID;
       });
-
       let objectsToDelete = _.differenceWith(oldArr, newArr, _.isEqual);
-
-      //save current pages
+      //   //save current pages
       jsonfile.writeFileSync(`./sites/${appIndex}.json`, newArr);
       logger.info(`${appIndex}.json written`);
-
       if (objectsToDelete.length) {
         console.log("Delete: ", objectsToDelete);
         index.deleteObjects(objectsToDelete, function(err, res) {
@@ -142,7 +138,6 @@ function setSearchObjects(objects) {
         logger.info("No deletions detected");
       }
     }
-
     logger.info("Indexing complete.");
   });
 }
