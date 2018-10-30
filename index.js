@@ -1,4 +1,4 @@
-let siteName = "ilheals";
+let siteName = "cjcc";
 
 require("dotenv").config();
 let _ = require("lodash");
@@ -58,12 +58,6 @@ let arrayOfUrls = urls.map(url => {
 
 let num = arrayOfUrls.length;
 
-function stripHtml(html) {
-  // strip HTML -- replace with single space for Algolia
-  let searchContent = html.replace(/<(?:.|\n)*?>/gm, " ");
-  return searchContent;
-}
-
 function get(url) {
   // create Algolia objectID based on hash of page url
   let objectID = crypto
@@ -76,20 +70,14 @@ function get(url) {
     fields: ["data"],
     parse: function($) {
       return {
-        title:
-          $("title")
-            .text()
-            .replace(titleReplacement, "") || "title undefined",
-        description:
-          $("meta[name='description' i]").attr("content") ||
-          "description undefined",
-        keywords:
-          $("meta[name='keywords' i]").attr("content") || "keywords undefined",
+        keywords: $("meta[name='keywords' i]").attr("content"),
+        title: $("title")
+          .text()
+          .replace(titleReplacement, ""),
+        body: $("#page-content").text(),
+        description: $("meta[name='description' i]").attr("content"),
         url: url.replace(/.*\/\/[^\/]*/, ""),
         fullUrl: url,
-        body:
-          stripHtml($(bodyContentId).html()).substring(0, 9500) ||
-          "page content undefined",
         objectID: objectID
       };
     }
@@ -100,6 +88,7 @@ arrayOfUrls.map(async function(url) {
   await get(url).then(function(res) {
     num--;
     algoliaIndex.push(res.data);
+    //console.log(res.data);
     if (num === 0) {
       // Finished generating
       logger.info(`Finished querying URLs`);

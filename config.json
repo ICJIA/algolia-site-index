@@ -12,5 +12,12 @@
     "urlBase": "https://www.ilheals.com/",
     "bodyContentId": "#page-content",
     "titleReplacement": "Illinois HEALS | "
+  },
+  "cjcc": {
+    "index": "cjcc",
+    "sitemap": "https://cjcc.netlify.com/sitemap.xml",
+    "urlBase": "https://www.cjcss.netlify/",
+    "bodyContentId": "#page-content",
+    "titleReplacement": "ILLINOIS CJCC | "
   }
 }
