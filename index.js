@@ -105,28 +105,13 @@ function setSearchObjects(objects) {
   );
 
   let index = client.initIndex(`${appIndex}`);
+  index.clearIndex(function(err, content) {
+    if (err) throw err;
+    logger.info("Index cleared.");
+    logger.info(content);
+  });
   index.addObjects(objects, function(err, content) {
-    console.log("Error: ", err);
-    //detect deletions only if previously indexed
-    if (previouslyIndexed) {
-      let oldArr = algoliaOldContent["objectIDs"];
-      let newArr = objects.map(idx => {
-        return idx.objectID;
-      });
-      let objectsToDelete = _.differenceWith(oldArr, newArr, _.isEqual);
-      //   //save current pages
-      jsonfile.writeFileSync(`./sites/${appIndex}.json`, newArr);
-      logger.info(`${appIndex}.json written`);
-      if (objectsToDelete.length) {
-        console.log("Delete: ", objectsToDelete);
-        index.deleteObjects(objectsToDelete, function(err, res) {
-          if (err) throw err;
-          logger.info(`Successfully deleted: ${objectsToDelete}`);
-        });
-      } else {
-        logger.info("No deletions detected");
-      }
-    }
+    if (err) throw err;
     logger.info("Indexing complete.");
   });
 }

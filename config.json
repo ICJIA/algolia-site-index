@@ -15,8 +15,8 @@
   },
   "cjcc": {
     "index": "cjcc",
-    "sitemap": "https://cjcc.netlify.com/sitemap.xml",
-    "urlBase": "https://www.cjcss.netlify/",
+    "sitemap": "https://cjcc.icjia.cloud/sitemap.xml",
+    "urlBase": "https://www.icjia.cloud/",
     "bodyContentId": "#page-content",
     "titleReplacement": "ILLINOIS CJCC | "
   }
